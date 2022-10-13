@@ -4,5 +4,7 @@ This respository includes various scripts and playbooks that can help users with
 
 
 ## Docker
-Dockerfile to create an Ubuntu 22.04 docker container with Groq's Developer Package included. (Note: this requires the Groq developer package *.deb file, which can be requested from Groq's Customer Portal at support.groq.com).
+Dockerfile to create an Ubuntu 22.04 docker container with Groq's Developer Package included.
+
+**Note:** this requires the Groq developer package *.deb file, which can be requested from Groq's Customer Portal at support.groq.com).
 
