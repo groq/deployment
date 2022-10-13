@@ -1,6 +1,6 @@
 # Groq Deployment Tools
 
-This respository includes various scripts and playbooks that can help users with setting up Groq systems and software. 
+This repository includes various scripts and playbooks that can help users with setting up Groq systems and software. 
 
 
 ## Docker
