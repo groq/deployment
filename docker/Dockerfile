@@ -1,28 +1,82 @@
-# syntax=docker/dockerfile:1
 FROM ubuntu:22.04
 ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=UTC
 
-RUN mkdir -p /install
-WORKDIR /install
+##############################################################################
+######## Install the GroqWare Suite Developer Package ########################
+##############################################################################
 
-COPY groq-devtools_0.9.0_amd64.deb ./
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        wget \
+        ca-certificates \
+        build-essential \
+        gcc-10 \
+        libstdc++-10-dev \
+        libssl-dev \
+        cmake \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN apt update && apt upgrade -y
-RUN apt install software-properties-common -y
-RUN add-apt-repository ppa:deadsnakes/ppa -y
-RUN add-apt-repository -y universe
-RUN apt update -y
-RUN apt-get -y install git
-RUN apt-get -y install wget
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        software-properties-common \
+        gpg-agent \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN apt install ./groq-devtools_0.9.0_amd64.deb -y
+RUN apt-get update \
+    && add-apt-repository ppa:deadsnakes/ppa -y
 
-RUN apt install -y curl python3.8-distutils
-RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-RUN python3.8 get-pip.py
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        python3.8 \
+        python3.8-dev \
+    && rm -rf /var/lib/apt/lists/*
 
+ARG GROQ=0.9.1
 
-RUN python3.8 -m pip install Deprecated==1.2.13 numpy==1.21.2 ansicolors==1.1.8 parse==1.19.0 ordered-set==4.0.2 parsimonious==0.8.1 protobuf==3.19.0
+COPY groq-devtools_${GROQ}_amd64.deb /tmp/groq-devtools.deb
 
-WORKDIR /
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        /tmp/groq-devtools.deb \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN rm /tmp/groq-devtools.deb
+
+##############################################################################
+######## Install Miniconda and Create a GroqFlow Conda Environment ###########
+##############################################################################
+
+RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /tmp/miniconda.sh
+
+RUN bash /tmp/miniconda.sh -b
+
+ARG CONDA_PATH=/root/miniconda3/condabin
+RUN $CONDA_PATH/conda init
+RUN $CONDA_PATH/conda config --set auto_activate_base False
+RUN $CONDA_PATH/conda create -n groqflow python=3.8
+RUN echo "conda activate groqflow" >> ~/.bashrc
+RUN $CONDA_PATH/conda run -n groqflow pip install --upgrade pip
+
+RUN rm /tmp/miniconda.sh
+
+##############################################################################
+######## Git Clone the GroqFlow and GroqAPI Repositories #####################
+########     and Install Their Dependancies              #####################
+##############################################################################
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        git \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN git clone https://github.com/groq/groqflow.git
+RUN git clone https://github.com/groq/GroqAPI.git
+
+RUN $CONDA_PATH/conda run -n groqflow pip install -e /groqflow
+
+##############################################################################
+######## Install Netron to visualize ONNX model files ########################
+##############################################################################
+
+RUN $CONDA_PATH/conda run -n groqflow pip install netron
