@@ -8,19 +8,19 @@ ENV TZ=UTC
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        wget \
-        ca-certificates \
-        build-essential \
-        gcc-10 \
-        libstdc++-10-dev \
-        libssl-dev \
-        cmake \
+    wget \
+    ca-certificates \
+    build-essential \
+    gcc-10 \
+    libstdc++-10-dev \
+    libssl-dev \
+    cmake \
     && rm -rf /var/lib/apt/lists/*
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        software-properties-common \
-        gpg-agent \
+    software-properties-common \
+    gpg-agent \
     && rm -rf /var/lib/apt/lists/*
 
 RUN apt-get update \
@@ -28,17 +28,17 @@ RUN apt-get update \
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        python3.8 \
-        python3.8-dev \
+    python3.8 \
+    python3.8-dev \
     && rm -rf /var/lib/apt/lists/*
 
-ARG GROQ=0.9.1
+ARG GROQ=0.9.3
 
-COPY groq-devtools_${GROQ}_amd64.deb /tmp/groq-devtools.deb
+COPY groq-devtools-ubuntu22.04-amd64-${GROQ}.deb /tmp/groq-devtools.deb
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        /tmp/groq-devtools.deb \
+    /tmp/groq-devtools.deb \
     && rm -rf /var/lib/apt/lists/*
 
 RUN rm /tmp/groq-devtools.deb
@@ -67,7 +67,7 @@ RUN rm /tmp/miniconda.sh
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        git \
+    git \
     && rm -rf /var/lib/apt/lists/*
 
 RUN git clone https://github.com/groq/groqflow.git
