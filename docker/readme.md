@@ -8,7 +8,7 @@ For those that would like to install the GroqWare Developer package in a docker 
 
 * Dockerfile included in [this folder](../docker/).
 
-* GroqWare Developer Package for Ubuntu 22.04 (groq-devtools_0.9.1_amd64.deb).
+* GroqWare Developer Package for Ubuntu 22.04 (groq-devtools-ubuntu22.04-amd64-0.9.3.deb).
 
 # Build Docker and Run
 
