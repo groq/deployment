@@ -8,19 +8,20 @@ ENV TZ=UTC
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-    wget \
-    ca-certificates \
-    build-essential \
-    gcc-10 \
-    libstdc++-10-dev \
-    libssl-dev \
-    cmake \
+        wget \
+        ca-certificates \
+        build-essential \
+        gcc-10 \
+        libstdc++-10-dev \
+        libssl-dev \
+        cmake \
+        libgmpxx4ldbl \
     && rm -rf /var/lib/apt/lists/*
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-    software-properties-common \
-    gpg-agent \
+        software-properties-common \
+        gpg-agent \
     && rm -rf /var/lib/apt/lists/*
 
 RUN apt-get update \
@@ -28,17 +29,26 @@ RUN apt-get update \
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-    python3.8 \
-    python3.8-dev \
+        python3.10 \
+        python3.10-dev \
     && rm -rf /var/lib/apt/lists/*
 
-ARG GROQ=0.9.3
+ARG GROQ=0.10.0
 
-COPY groq-devtools-ubuntu22.04-amd64-${GROQ}.deb /tmp/groq-devtools.deb
+COPY groq-common_${GROQ}_amd64.deb /tmp/groq-common.deb
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-    /tmp/groq-devtools.deb \
+        /tmp/groq-common.deb \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN rm /tmp/groq-common.deb
+
+COPY groq-devtools_${GROQ}_amd64.deb /tmp/groq-devtools.deb
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        /tmp/groq-devtools.deb \
     && rm -rf /var/lib/apt/lists/*
 
 RUN rm /tmp/groq-devtools.deb
@@ -54,7 +64,7 @@ RUN bash /tmp/miniconda.sh -b
 ARG CONDA_PATH=/root/miniconda3/condabin
 RUN $CONDA_PATH/conda init
 RUN $CONDA_PATH/conda config --set auto_activate_base False
-RUN $CONDA_PATH/conda create -n groqflow python=3.8
+RUN $CONDA_PATH/conda create -n groqflow python=3.10
 RUN echo "conda activate groqflow" >> ~/.bashrc
 RUN $CONDA_PATH/conda run -n groqflow pip install --upgrade pip
 
@@ -67,7 +77,7 @@ RUN rm /tmp/miniconda.sh
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-    git \
+        git \
     && rm -rf /var/lib/apt/lists/*
 
 RUN git clone https://github.com/groq/groqflow.git
