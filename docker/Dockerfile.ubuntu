@@ -53,13 +53,11 @@ RUN apt-get update \
 # Install the GroqWare Suite Developer Package
 COPY ${GROQ_FILES_DIR}groq-common_${GROQ_SDK_VER}_amd64.deb /tmp/groq-common.deb
 COPY ${GROQ_FILES_DIR}groq-devtools_${GROQ_SDK_VER}_amd64.deb /tmp/groq-devtools.deb
-COPY ${GROQ_FILES_DIR}groq-runtime_${GROQ_SDK_VER}_amd64.deb /tmp/groq-runtime.deb
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
     /tmp/groq-common.deb \
     /tmp/groq-devtools.deb/ \
-    /tmp/groq-runtime.deb/ \
     && rm -rf /var/lib/apt/lists/* \
     && rm /tmp/groq-*.deb
 

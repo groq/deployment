@@ -43,13 +43,11 @@ RUN dnf install -y \
 # Install the GroqWare Suite Developer Package
 COPY ${GROQ_FILES_DIR}groq-common-${GROQ_SDK_VER}.x86_64.rpm /tmp/groq-common.rpm
 COPY ${GROQ_FILES_DIR}groq-devtools-${GROQ_SDK_VER}.x86_64.rpm /tmp/groq-devtools.rpm
-COPY ${GROQ_FILES_DIR}groq-runtime-${GROQ_SDK_VER}.x86_64.rpm /tmp/groq-runtime.rpm
 
 RUN dnf install  -y \
     /tmp/groq-common.rpm \
     /tmp/groq-devtools.rpm \
-    /tmp/groq-runtime.rpm  && \
-    rm /tmp/groq-*.rpm
+    && rm /tmp/groq-*.rpm
 
 # Install Miniconda and Create a GroqFlow Conda Environment
 RUN useradd  -r \
