@@ -53,20 +53,34 @@ RUN apt-get update \
 # Install the GroqWare Suite Developer Package
 COPY ${GROQ_FILES_DIR}groq-common_${GROQ_SDK_VER}_amd64.deb /tmp/groq-common.deb
 COPY ${GROQ_FILES_DIR}groq-devtools_${GROQ_SDK_VER}_amd64.deb /tmp/groq-devtools.deb
+COPY ${GROQ_FILES_DIR}groq-runtime_${GROQ_SDK_VER}_amd64.deb /tmp/groq-runtime.deb
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
     /tmp/groq-common.deb \
     /tmp/groq-devtools.deb/ \
+    /tmp/groq-runtime.deb/ \
     && rm -rf /var/lib/apt/lists/* \
     && rm /tmp/groq-*.deb
 
 # Install Miniconda and Create a GroqFlow Conda Environment
-RUN adduser --system \
+#RUN adduser --system \
+#    --home /home/${GROQ_USER} \
+#    --shell /bin/bash \
+#    --disabled-password \
+#    ${GROQ_USER}
+
+RUN groupadd ${GROQ_USER}} \
+    && adduser --system \
     --home /home/${GROQ_USER} \
     --shell /bin/bash \
     --disabled-password \
-    ${GROQ_USER}
+    ${GROQ_USER} \
+    #
+    # [Optional] Add sudo support. Omit if you don't need to install software after connecting.
+    && apt-get install -y sudo \
+    && echo ${GROQ_USER} ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/${GROQ_USER}} \
+    && chmod 0440 /etc/sudoers.d/${GROQ_USER}}
 
 USER ${GROQ_USER}
 WORKDIR /home/${GROQ_USER}
