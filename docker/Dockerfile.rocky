@@ -31,7 +31,7 @@ ENV TZ=UTC
 # Update the base image and install dependencies
 RUN dnf makecache  && dnf upgrade-minimal -y && \
     dnf install -y epel-release && \
-    dnf groupinstall "development Tools" -y 
+    dnf groupinstall "development tools" -y 
 
 RUN dnf install -y \
     wget \
@@ -47,7 +47,7 @@ COPY ${GROQ_FILES_DIR}groq-devtools-${GROQ_SDK_VER}.x86_64.rpm /tmp/groq-devtool
 RUN dnf install  -y \
     /tmp/groq-common.rpm \
     /tmp/groq-devtools.rpm \
-    && rm /tmp/groq-*.rpm
+    rm /tmp/groq-*.rpm
 
 # Install Miniconda and Create a GroqFlow Conda Environment
 RUN useradd  -r \
@@ -75,5 +75,3 @@ RUN $CONDA_PATH/conda run -n groqflow pip install -e ./groqflow
 # Install Netron and jupyter notebook
 RUN $CONDA_PATH/conda run -n groqflow pip install netron
 RUN $CONDA_PATH/conda run -n groqflow pip install jupyter
-
-CMD /bin/bash
