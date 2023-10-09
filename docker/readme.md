@@ -34,9 +34,10 @@ Run the image in interactive mode:
 $docker run -it -p 8080:8080 -p 8439:8439 -p 8888:8888 groq-devel-{os}:{sdk_ver}
 ```
 
-This will log you into the container as the "groq" user and activate the groqflow conda environment by default.
+This will log you into the container as the "groq" user and activate the groqflow conda environment by default.   
+The groq user is part of the sudoer group.
 
-The above ports will be forwarded between the container and host correspond to the following:
+The following  ports will be forwarded between the container and host correspond to the following:
 - Port 8080 - Netron
 - Port 8439 - GroqView
 - Port 8888 - Jupyter
