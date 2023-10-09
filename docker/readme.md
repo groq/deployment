@@ -15,7 +15,7 @@ For those that would like to install the GroqWare Developer package in a docker 
 - GroqWare Developer Packages (common and devtools) for the operating system of your container.
 
 ## Build Docker and Run
-Ensure you have the GroqWare debian package in the same location as the provided Dockerfile, then build your docker image:
+Ensure you have the GroqWare *.deb or .rpm* packages in the same location as the provided Dockerfile, then build your docker image:
 
 ```bash
 $docker build --tag groq-devel-{os}:{sdk_ver} --file Dockerfile.{os} .
@@ -34,7 +34,7 @@ Run the image in interactive mode:
 $docker run -it -p 8080:8080 -p 8439:8439 -p 8888:8888 groq-devel-{os}:{sdk_ver}
 ```
 
-This will log you into the container as the "groq" user and activate the groqflow conda environment by default.   
+This will log you into the container as the *groq* user and activate the groqflow conda environment by default.   
 The groq user is part of the sudoer group.
 
 The following  ports will be forwarded between the container and host correspond to the following:
