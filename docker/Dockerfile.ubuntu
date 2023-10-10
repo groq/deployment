@@ -1,0 +1,94 @@
+# Create an Ubuntu based container that allows for testing the GroqWare software
+# suite.  
+
+FROM ubuntu:22.04
+LABEL author="Groq, Inc." \
+      version="0.10.0" \
+      build-creator="Groq"
+
+# Ensure there is no interaction with the package manager
+ARG DEBIAN_FRONTEND=noninteractive
+
+# This must match the version specificed for each SDK and O/S
+ARG PYTHON_VER=3.10
+
+# This is the specific GroqWare SDK Version.  It is also used to regex match the 
+# installation packages.
+ARG GROQ_SDK_VER=0.10.0
+
+# The location of the groqware packages.  Change if not in the same directory as
+# the Dockerfile. Note that the location needs to be within the local source tree.
+ARG GROQ_FILES_DIR=./
+
+# This is the user to install the miniconda package and also the default login
+ARG GROQ_USER=groq
+ARG CONDA_PATH=/home/${GROQ_USER}/miniconda3/condabin
+
+# These are the ports required for GroqView, Jupyter and Neutron
+EXPOSE 8080
+EXPOSE 8439
+EXPOSE 8888
+
+ENV TZ=UTC
+
+# Update the base image and install dependencies
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+    wget \
+    ca-certificates \
+    build-essential \
+    gcc-10 \
+    libstdc++-10-dev \ 
+    libssl-dev \
+    cmake \
+    software-properties-common \
+    libgmpxx4ldbl \
+    gpg-agent \
+    git \
+    sudo \
+    python${PYTHON_VER} \
+    python${PYTHON_VER}-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install the GroqWare Suite Developer Package
+COPY ${GROQ_FILES_DIR}groq-common_${GROQ_SDK_VER}_amd64.deb /tmp/groq-common.deb
+COPY ${GROQ_FILES_DIR}groq-devtools_${GROQ_SDK_VER}_amd64.deb /tmp/groq-devtools.deb
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+    /tmp/groq-common.deb \
+    /tmp/groq-devtools.deb/ \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm /tmp/groq-*.deb
+
+# Install Miniconda and Create a GroqFlow Conda Environment
+RUN adduser --system \
+    --home /home/${GROQ_USER} \
+    --shell /bin/bash \
+    --disabled-password \
+    ${GROQ_USER} \
+    # [Optional] Add sudo support. Omit if you don't need to install software after connecting.
+    #&& apt-get install -y sudo \
+    && echo ${GROQ_USER} ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/${GROQ_USER} \
+    && chmod 0440 /etc/sudoers.d/${GROQ_USER}
+
+USER ${GROQ_USER}
+WORKDIR /home/${GROQ_USER}
+RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+RUN bash miniconda.sh -b
+RUN $CONDA_PATH/conda init
+RUN $CONDA_PATH/conda config --set auto_activate_base False
+RUN $CONDA_PATH/conda create -n groqflow python=${PYTHON_VER}
+RUN echo "conda activate groqflow" >> ~/.bashrc
+RUN $CONDA_PATH/conda run -n groqflow pip install --upgrade pip
+RUN rm miniconda.sh
+
+# Clone the GroqFlow and optionally the and GroqAPI Repositories
+RUN git clone https://github.com/groq/groqflow.git
+# [Optional]  Remove if you just want to explore Groqflow
+RUN git clone https://github.com/groq/GroqAPI.git
+RUN $CONDA_PATH/conda run -n groqflow pip install -e ./groqflow
+
+# Install Netron and jupyter notebook
+RUN $CONDA_PATH/conda run -n groqflow pip install netron
+RUN $CONDA_PATH/conda run -n groqflow pip install jupyter
