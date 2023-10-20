@@ -58,8 +58,8 @@ RUN useradd  -r \
     ${GROQ_USER} \
     # [Optional] Add sudo support. Omit if you don't need to install software after connecting.
     && dnf install -y sudo \
-    && echo ${GROQ_USER} ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/${GROQ_USER}} \
-    && chmod 0440 /etc/sudoers.d/${GROQ_USER}}
+    && echo ${GROQ_USER} ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/${GROQ_USER} \
+    && chmod 0440 /etc/sudoers.d/${GROQ_USER}
 
 USER ${GROQ_USER}
 WORKDIR /home/${GROQ_USER}
